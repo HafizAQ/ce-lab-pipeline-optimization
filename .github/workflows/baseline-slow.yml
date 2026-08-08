@@ -24,7 +24,7 @@ jobs:
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v3
         with:
-          terraform_version: 1.6.0
+          terraform_version: 1.6.1
 
       # Anti-pattern: no caching — downloads providers every run
       - name: Terraform Init
@@ -34,8 +34,25 @@ jobs:
       - name: Terraform Format Check
         run: terraform fmt -check -recursive
 
+      #add temporary Verify AWS secrets
       - name: Terraform Validate
         run: terraform validate
+
+      - name: Verify AWS secrets
+        run: |
+          if [ -z "${{ secrets.AWS_ACCESS_KEY_ID }}" ]; then
+            echo "AWS_ACCESS_KEY_ID is missing"
+            exit 1
+          else
+            echo "AWS_ACCESS_KEY_ID is available"
+          fi
+
+          if [ -z "${{ secrets.AWS_SECRET_ACCESS_KEY }}" ]; then
+            echo "AWS_SECRET_ACCESS_KEY is missing"
+            exit 1
+          else
+            echo "AWS_SECRET_ACCESS_KEY is available"
+          fi
 
       - name: Terraform Plan
         run: terraform plan -no-color -input=false

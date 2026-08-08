@@ -31,7 +31,7 @@ jobs:
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v3
         with:
-          terraform_version: 1.6.0
+          terraform_version: 1.6.1
 
       - name: Terraform Format Check
         run: terraform fmt -check -recursive -diff
@@ -50,7 +50,7 @@ jobs:
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v3
         with:
-          terraform_version: 1.6.0
+          terraform_version: 1.6.1
 
       - name: Cache Terraform providers
         uses: actions/cache@v4
@@ -83,7 +83,7 @@ jobs:
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v3
         with:
-          terraform_version: 1.6.0
+          terraform_version: 1.6.1
 
       - name: Cache Terraform providers
         uses: actions/cache@v4
@@ -97,6 +97,22 @@ jobs:
 
       - name: Terraform Init
         run: terraform init -backend=false
+
+      - name: Verify AWS secrets
+        run: |
+          if [ -z "${{ secrets.AWS_ACCESS_KEY_ID }}" ]; then
+            echo "AWS_ACCESS_KEY_ID is missing"
+            exit 1
+          else
+            echo "AWS_ACCESS_KEY_ID is available"
+          fi
+
+          if [ -z "${{ secrets.AWS_SECRET_ACCESS_KEY }}" ]; then
+            echo "AWS_SECRET_ACCESS_KEY is missing"
+            exit 1
+          else
+            echo "AWS_SECRET_ACCESS_KEY is available"
+          fi
 
       - name: Terraform Plan
         id: plan
